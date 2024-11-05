@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   final col = const Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: const [
         Text("レモン"),
         Text("オレンジ"),
