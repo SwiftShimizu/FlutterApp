@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  final col = const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: const [
-        Text("レモン"),
-        Text("オレンジ"),
-        Text("バナナ"),
-      ]);
+  final col = const Column(mainAxisSize: MainAxisSize.min, children: const [
+    Text("レモン"),
+    Text("オレンジ"),
+    Text("バナナ"),
+  ]);
+
+  final row = Row(mainAxisSize: MainAxisSize.min, children: [col, col, col]);
 
   final a = MaterialApp(
     home: Scaffold(
       body: Center(
-        child: col,
+        child: row,
       ),
     ),
   );
