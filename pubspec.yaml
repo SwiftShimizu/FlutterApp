@@ -9,6 +9,7 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
+  go_router:
   flutter_riverpod:
   flutter:
     sdk: flutter
