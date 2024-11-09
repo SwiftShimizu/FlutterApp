@@ -1,67 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-main() {
-  // アプリ
-  const app = MaterialApp(home: Example());
-  // プロバイダースコープでアプリを囲む
-  const scope = ProviderScope(child: app);
-  runApp(scope);
+// ツイート
+class Tweet {
+  final String userName;
+  final String iconUrl;
+  final String text;
+  final String createdAt;
+  Tweet(this.userName, this.iconUrl, this.text, this.createdAt);
 }
 
-// プロバイダー
-final nicknameProvider = StateProvider<String>((ref) {
-  return 'ルビードッグ';
-});
+// 適当なモデル
+final models = [
+  Tweet("さくらんぼ君", "https://example.com/icon.png", "バナナ", "2021-01-02"),
+  Tweet("ももちゃん", "https://example.com/icon.png", "リンゴ", "2021-01-03"),
+  Tweet("りんご太郎", "https://example.com/icon.png", "イチゴ", "2021-01-04"),
+  Tweet("メロン先生", "https://example.com/icon.png", "メロン", "2021-01-05"),
+  Tweet("パイナぽん", "https://example.com/icon.png", "パイナップル", "2021-01-06"),
+  Tweet("オレンジ姫", "https://example.com/icon.png", "オレンジ", "2021-01-07"),
+  Tweet("ぶどう丸", "https://example.com/icon.png", "グレープ", "2021-01-08"),
+  Tweet("キウィ博士", "https://example.com/icon.png", "キウイ", "2021-01-09"),
+  Tweet("スイカ子", "https://example.com/icon.png", "スイカ", "2021-01-10"),
+  Tweet("マンゴー王", "https://example.com/icon.png", "マンゴー", "2021-01-11"),
+  Tweet("マスカット姫", "https://example.com/icon.png", "マスカット", "2021-01-12"),
+];
 
-// 画面
-class Example extends ConsumerWidget {
-  const Example({super.key});
+// モデル -> ウィジェットに変換する関数
+Widget modelToWidget(Tweet model) {
+  // ユーザーアイコン
+  final icon = Container(
+    margin: const EdgeInsets.all(20),
+    width: 60,
+    height: 60,
+    // 画像を丸くする
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(30.0),
+      child: Image.asset('assets/images/${model.iconUrl}'),
+    ),
+  );
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // データを見張っておく
-    final nickname = ref.watch(nicknameProvider);
-
-    return Scaffold(
-      // ニックネーム 1
-      appBar: AppBar(title: Text(nickname)),
-      body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // ニックネーム 2
-            Text(nickname),
-            // ボタン A
-            ElevatedButton(onPressed: () => tapA(ref), child: const Text('A')),
-            // ボタン B
-            ElevatedButton(onPressed: () => tapB(ref), child: const Text('B')),
-            // ボタン C
-            ElevatedButton(onPressed: () => tapC(ref), child: const Text('C')),
-            // ニックネーム 3
-            Text(nickname),
-          ],
-        ),
+  // ユーザー名と投稿日時
+  final header = Row(
+    children: [
+      icon,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(model.userName),
+          Text(model.createdAt),
+        ],
       ),
-    );
-  }
+    ],
+  );
 
-  // ノティファイア でデータを変更する
+  // 本文
+  final text = Container(
+    margin: const EdgeInsets.all(20),
+    child: Text(model.text),
+  );
 
-  tapA(WidgetRef ref) {
-    final notifier = ref.read(nicknameProvider.notifier);
-    notifier.state = 'ルビーキャット';
-  }
+  return Container(
+    margin: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.grey),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        header,
+        text,
+      ],
+    ),
+  );
+}
 
-  tapB(WidgetRef ref) {
-    final notifier = ref.read(nicknameProvider.notifier);
-    notifier.state = 'ルビーバード';
-  }
-
-  tapC(WidgetRef ref) {
-    final notifier = ref.read(nicknameProvider.notifier);
-    notifier.state = 'ルビーフィッシュ';
-  }
+void main() {
+  final list = ListView.builder(
+    itemBuilder: (c, i) => modelToWidget(models[i]),
+    itemCount: models.length,
+  );
+  final sca = Scaffold(body: list);
+  final app = MaterialApp(home: sca);
+  runApp(app);
 }
