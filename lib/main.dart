@@ -1,25 +1,67 @@
 import 'package:flutter/material.dart';
-// riverpodのインポート
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  const controller = TextEditingController();
+main() {
+  // アプリ
+  const app = MaterialApp(home: Example());
+  // プロバイダースコープでアプリを囲む
+  const scope = ProviderScope(child: app);
+  runApp(scope);
+}
 
-  const textField = TextField(
-    controller: controller,
-    decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "あなたの名前",
-        hintText: "カタカナで入力してください",
-        errorText: "名前が長過ぎます"),
-  );
+// プロバイダー
+final nicknameProvider = StateProvider<String>((ref) {
+  return 'ルビードッグ';
+});
 
-  final a = MaterialApp(
-    home: Scaffold(
-      body: Center(
-        child: textField,
+// 画面
+class Example extends ConsumerWidget {
+  const Example({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // データを見張っておく
+    final nickname = ref.watch(nicknameProvider);
+
+    return Scaffold(
+      // ニックネーム 1
+      appBar: AppBar(title: Text(nickname)),
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // ニックネーム 2
+            Text(nickname),
+            // ボタン A
+            ElevatedButton(onPressed: () => tapA(ref), child: const Text('A')),
+            // ボタン B
+            ElevatedButton(onPressed: () => tapB(ref), child: const Text('B')),
+            // ボタン C
+            ElevatedButton(onPressed: () => tapC(ref), child: const Text('C')),
+            // ニックネーム 3
+            Text(nickname),
+          ],
+        ),
       ),
-    ),
-  );
-  runApp(a);
+    );
+  }
+
+  // ノティファイア でデータを変更する
+
+  tapA(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーキャット';
+  }
+
+  tapB(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーバード';
+  }
+
+  tapC(WidgetRef ref) {
+    final notifier = ref.read(nicknameProvider.notifier);
+    notifier.state = 'ルビーフィッシュ';
+  }
 }
