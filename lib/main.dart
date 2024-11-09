@@ -1,32 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/banana_counter.dart';
+// riverpodのインポート
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  final bananaCounter = BananaCounter(
-    number: 3,
-  );
+  const controller = TextEditingController();
 
-  xxxx() {
-    debugPrint('通信を開始します');
-    debugPrint('通信中です');
-    debugPrint('通信が完了しました');
-  }
-
-  final button = ElevatedButton(
-    onPressed: xxxx,
-    child: Text(
-      'ボタン',
-      style: TextStyle(color: Colors.white),
-    ),
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.green,
-    ),
+  const textField = TextField(
+    controller: controller,
+    decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "あなたの名前",
+        hintText: "カタカナで入力してください",
+        errorText: "名前が長過ぎます"),
   );
 
   final a = MaterialApp(
     home: Scaffold(
       body: Center(
-        child: button,
+        child: textField,
       ),
     ),
   );
