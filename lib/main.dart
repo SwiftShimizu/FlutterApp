@@ -5,62 +5,87 @@ import 'package:flutterapp/page_b.dart';
 import 'package:flutterapp/page_c.dart';
 
 void main() {
-  const app = MaterialApp(
-    home: const Root(),
+  final app = MaterialApp(
+    home: Home(),
   );
-  runApp(ProviderScope(child: app));
+  final scope = ProviderScope(
+    child: app,
+  );
+
+  runApp(scope);
 }
 
-// プロバイダー
-final indexProvider = StateProvider(
-  (ref) {
-    return 0;
-  },
-);
+final isOnProvider = StateProvider((ref) => true);
 
-class Root extends ConsumerWidget {
-  const Root({super.key});
+final valueProvider = StateProvider((ref) {
+  return 0.0;
+});
+
+final rangeProvider = StateProvider((ref) {
+  return const RangeValues(0.0, 1.0);
+});
+
+class Home extends ConsumerWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(indexProvider);
-
-    // ボトムナビケーションバーアイテム
-    final items = [
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.settings),
-        label: 'Settings',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person),
-        label: 'Profile',
-      ),
-    ];
-
-    final bar = BottomNavigationBar(
-      items: items,
-      backgroundColor: Colors.deepOrangeAccent,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.black,
-      currentIndex: index,
-      onTap: (int index) {
-        ref.read(indexProvider.notifier).state = index;
+    // トグルスイッチ
+    final isOn = ref.watch(isOnProvider);
+    final toggle = Switch(
+      value: isOn,
+      onChanged: (isOn) {
+        ref.read(isOnProvider.notifier).state = isOn;
       },
+      activeColor: Colors.blue,
+      activeTrackColor: Colors.green,
+      inactiveThumbColor: Colors.black,
+      inactiveTrackColor: Colors.grey,
     );
 
-    final pages = [
-      PageA(),
-      PageB(),
-      PageC(),
-    ];
+    final value = ref.watch(valueProvider);
+    final sider = Slider(
+      value: value,
+      onChanged: (value) {
+        ref.read(valueProvider.notifier).state = value;
+      },
+      thumbColor: Colors.blue,
+      activeColor: Colors.green,
+      inactiveColor: Colors.grey,
+    );
+
+    // 赤色のコンテナ
+    final container = Container(
+      color: Colors.red,
+      width: value * 100,
+      height: 100,
+    );
+
+    final range = ref.watch(rangeProvider);
+    final rangeSlider = RangeSlider(
+      values: range,
+      onChanged: (range) {
+        ref.read(rangeProvider.notifier).state = range;
+      },
+      activeColor: Colors.green,
+      inactiveColor: Colors.grey,
+    );
 
     return Scaffold(
-      body: pages[index],
-      bottomNavigationBar: bar,
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            toggle,
+            sider,
+            container,
+            rangeSlider,
+          ],
+        ),
+      ),
     );
   }
 }
