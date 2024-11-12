@@ -1,91 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutterapp/page_a.dart';
-import 'package:flutterapp/page_b.dart';
-import 'package:flutterapp/page_c.dart';
+import 'package:riverpod/riverpod.dart';
 
 void main() {
-  final app = MaterialApp(
-    home: Home(),
-  );
-  final scope = ProviderScope(
-    child: app,
-  );
-
-  runApp(scope);
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
-final isOnProvider = StateProvider((ref) => true);
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-final valueProvider = StateProvider((ref) {
-  return 0.0;
-});
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Home(),
+    );
+  }
+}
 
-final rangeProvider = StateProvider((ref) {
-  return const RangeValues(0.0, 1.0);
-});
+// 選ばれたラジオボタンの ID を保持する Provider
+final radioIdProvider = StateProvider<String?>((ref) => null);
+
+// 選ばれたチェックボックスのIDたちを保持する Provider
+final checkedIdsProvider = StateProvider<Set<String>>((ref) => {});
 
 class Home extends ConsumerWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // トグルスイッチ
-    final isOn = ref.watch(isOnProvider);
-    final toggle = Switch(
-      value: isOn,
-      onChanged: (isOn) {
-        ref.read(isOnProvider.notifier).state = isOn;
-      },
-      activeColor: Colors.blue,
-      activeTrackColor: Colors.green,
-      inactiveThumbColor: Colors.black,
-      inactiveTrackColor: Colors.grey,
-    );
+    // ラジオボタンIDに合わせて画面を変化させる
+    final radioId = ref.watch(radioIdProvider);
+    // チェックボックスのIDたちに合わせて画面を変化させる
+    final checkedIds = ref.watch(checkedIdsProvider);
 
-    final value = ref.watch(valueProvider);
-    final sider = Slider(
-      value: value,
-      onChanged: (value) {
-        ref.read(valueProvider.notifier).state = value;
-      },
-      thumbColor: Colors.blue,
-      activeColor: Colors.green,
-      inactiveColor: Colors.grey,
-    );
+    // ラジオボタンを押された時の処理
+    void onRadioChanged(String? id) {
+      ref.read(radioIdProvider.notifier).state = id;
+    }
 
-    // 赤色のコンテナ
-    final container = Container(
-      color: Colors.red,
-      width: value * 100,
-      height: 100,
-    );
+    // チェックボックスを押された時の処理
+    void onChangedCheckbox(String id) {
+      final newSet = Set.of(checkedIds);
+      if (newSet.contains(id)) {
+        newSet.remove(id);
+      } else {
+        newSet.add(id);
+      }
+      ref.read(checkedIdsProvider.notifier).state = newSet;
+    }
 
-    final range = ref.watch(rangeProvider);
-    final rangeSlider = RangeSlider(
-      values: range,
-      onChanged: (range) {
-        ref.read(rangeProvider.notifier).state = range;
-      },
-      activeColor: Colors.green,
-      inactiveColor: Colors.grey,
-    );
+    final col = Column(
+      children: [
+        // ラジオボタングループ
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onRadioChanged,
+          value: 'A',
+          title: const Text('ラジオA'),
+        ),
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onRadioChanged,
+          value: 'B',
+          title: const Text('ラジオB'),
+        ),
+        RadioListTile(
+          groupValue: radioId,
+          onChanged: onRadioChanged,
+          value: 'C',
+          title: const Text('ラジオC'),
+        ),
 
+        // チェックボックスグループ
+        CheckboxListTile(
+          onChanged: (value) => onChangedCheckbox('1'),
+          title: const Text('チェックボックス1'),
+          value: checkedIds.contains('1'),
+        ),
+        CheckboxListTile(
+          onChanged: (value) => onChangedCheckbox('2'),
+          title: const Text('チェックボックス2'),
+          value: checkedIds.contains('2'),
+        ),
+        CheckboxListTile(
+          onChanged: (value) => onChangedCheckbox('3'),
+          title: const Text('チェックボックス3'),
+          value: checkedIds.contains('3'),
+        ),
+
+        ElevatedButton(
+          onPressed: () {
+            debugPrint('ラジオボタンの値: $radioId');
+            debugPrint('チェックボックスの値: $checkedIds');
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            toggle,
-            sider,
-            container,
-            rangeSlider,
-          ],
-        ),
-      ),
+      body: Center(child: col),
     );
   }
 }
