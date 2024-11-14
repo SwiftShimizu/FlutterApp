@@ -1,71 +1,104 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 
-void main() {
-  const app = MaterialApp(
-    home: const Home(),
-  );
-  const scope = ProviderScope(child: app);
-  runApp(scope);
+main() {
+  const home = Home();
+  const app = MaterialApp(home: home);
+  runApp(app);
 }
 
-// どれくらい進んだかを表示する　パーセント
-final percentProvider = StateProvider((ref) {
-  return 0.00;
-});
+class Horse {
+  final String name;
+  final String iconUri;
 
-class Home extends ConsumerWidget {
-  const Home({super.key});
+  Horse({required this.name, required this.iconUri});
+}
+
+final models = [
+  Horse(name: 'Horse 1', iconUri: 'horse1.png'),
+  Horse(name: 'Horse 2', iconUri: 'horse2.png'),
+  Horse(name: 'Horse 3', iconUri: 'horse3.png'),
+];
+
+/// 馬のカード Widget
+class HorseCard extends StatelessWidget {
+  const HorseCard({
+    super.key,
+    required this.model,
+  });
+  // データが入ったモデル
+  final Horse model;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final percent = ref.watch(percentProvider);
-
-    final circular = CircularPercentIndicator(
-      percent: percent,
-      backgroundColor: Colors.yellow,
-      progressColor: Colors.green,
-      radius: 60,
-      lineWidth: 20,
-      center: Text('${percent * 100} %'),
-      animation: true,
-      animateFromLastPercent: true,
-      animationDuration: 200,
+  Widget build(BuildContext context) {
+    // 画像
+    final img = SizedBox(
+      height: 100,
+      child: Image.asset(
+        'assets/images/${model.iconUri}',
+      ),
     );
 
-    final linear = LinearPercentIndicator(
-      percent: percent,
-      backgroundColor: Colors.yellow,
-      progressColor: Colors.green,
-      lineHeight: 20,
-      alignment: MainAxisAlignment.center,
-      width: 300,
-      animation: true,
-      animateFromLastPercent: true,
-      animationDuration: 200,
-      center: Text('${percent * 100} %'),
+    // 名前
+    final text = Text(
+      model.name,
+      style: const TextStyle(fontSize: 20),
     );
 
-    final button = ElevatedButton(
-      onPressed: () {
-        ref.read(percentProvider.notifier).state += 0.1;
-      },
-      child: const Text('進める'),
-    );
-
-    final col = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    // 画像と名前を縦に並べる
+    final imgAndText = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        circular,
-        const SizedBox(height: 50),
-        linear,
-        const SizedBox(height: 50),
-        button,
+        img,
+        text,
       ],
     );
 
-    return Scaffold(body: col);
+    // カード部分を作るコンテナ
+    return Container(
+      decoration: BoxDecoration(
+        // 色
+        color: Colors.orange,
+        // 角丸
+        borderRadius: BorderRadius.circular(20),
+        // 影
+        boxShadow: [
+          BoxShadow(
+            // 影の設定
+            color: Colors.black.withOpacity(0.2), //色
+            spreadRadius: 2, // 広がりの大きさ
+            blurRadius: 2, // ぼかしの強さ
+            offset: const Offset(0, 2), // 方向
+          ),
+        ],
+      ),
+      child: imgAndText,
+    );
+  }
+}
+
+Widget modelToWidget(Horse model) {
+  return Container(
+    padding: const EdgeInsets.all(8),
+    child: HorseCard(model: model),
+  );
+}
+
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+      child: Container(
+        height: 200,
+        color: Colors.blue,
+        child: PageView.builder(
+          controller: PageController(viewportFraction: 0.8),
+          itemCount: models.length,
+          itemBuilder: (c, i) => modelToWidget(models[i]),
+        ),
+      ),
+    ));
   }
 }
