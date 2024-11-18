@@ -1,104 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutterapp/pack.dart';
+import 'dart:convert';
 
-main() {
-  const home = Home();
-  const app = MaterialApp(home: home);
-  runApp(app);
+import 'package:flutterapp/vegetable.dart';
+
+void main() async {
+  test3();
 }
 
-class Horse {
-  final String name;
-  final String iconUri;
+void test1() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  Horse({required this.name, required this.iconUri});
+  final json = await rootBundle.loadString('assets/stub/level1.json');
+  final map = jsonDecode(json);
+  final data = Vegetable.fromJson(map);
+  debugPrint('データの中身は $data');
 }
 
-final models = [
-  Horse(name: 'Horse 1', iconUri: 'horse1.png'),
-  Horse(name: 'Horse 2', iconUri: 'horse2.png'),
-  Horse(name: 'Horse 3', iconUri: 'horse3.png'),
-];
-
-/// 馬のカード Widget
-class HorseCard extends StatelessWidget {
-  const HorseCard({
-    super.key,
-    required this.model,
-  });
-  // データが入ったモデル
-  final Horse model;
-
-  @override
-  Widget build(BuildContext context) {
-    // 画像
-    final img = SizedBox(
-      height: 100,
-      child: Image.asset(
-        'assets/images/${model.iconUri}',
-      ),
-    );
-
-    // 名前
-    final text = Text(
-      model.name,
-      style: const TextStyle(fontSize: 20),
-    );
-
-    // 画像と名前を縦に並べる
-    final imgAndText = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        img,
-        text,
-      ],
-    );
-
-    // カード部分を作るコンテナ
-    return Container(
-      decoration: BoxDecoration(
-        // 色
-        color: Colors.orange,
-        // 角丸
-        borderRadius: BorderRadius.circular(20),
-        // 影
-        boxShadow: [
-          BoxShadow(
-            // 影の設定
-            color: Colors.black.withOpacity(0.2), //色
-            spreadRadius: 2, // 広がりの大きさ
-            blurRadius: 2, // ぼかしの強さ
-            offset: const Offset(0, 2), // 方向
-          ),
-        ],
-      ),
-      child: imgAndText,
-    );
-  }
+void test2() async {
+  const data = Vegetable(name: 'キャベツ', color: '緑', season: '春');
+  final map = data.toJson();
+  final json = jsonEncode(map);
+  debugPrint('JSONの中身は $json');
 }
 
-Widget modelToWidget(Horse model) {
-  return Container(
-    padding: const EdgeInsets.all(8),
-    child: HorseCard(model: model),
+void test3() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final json = await rootBundle.loadString('assets/stub/level2.json');
+  final map = jsonDecode(json);
+  final data = Pack.fromJson(map);
+  debugPrint('データの中身は $data');
+}
+
+void test4() async {
+  // 適当な野菜
+  const content = Vegetable(
+    name: 'アボガド',
+    color: '濃いみどり',
+    season: '秋',
   );
+  // 野菜パックのデータ
+  const data = Pack(
+    size: '中',
+    price: 800,
+    content: content,
+  );
+  // JsonMap <--- データ
+  final map = data.toJson();
+  // JSON <--- JsonMap
+  final json = jsonEncode(map);
+  // JSONの中身を確認する
+  debugPrint('JSONの中身は $json');
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+void test5() async {}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-      child: Container(
-        height: 200,
-        color: Colors.blue,
-        child: PageView.builder(
-          controller: PageController(viewportFraction: 0.8),
-          itemCount: models.length,
-          itemBuilder: (c, i) => modelToWidget(models[i]),
-        ),
-      ),
-    ));
-  }
-}
+void test6() async {}
+
+void test7() async {}
+
+void test8() async {}
+
+void test9() async {}
+
+void test10() async {}
