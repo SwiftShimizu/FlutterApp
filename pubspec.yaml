@@ -9,6 +9,7 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
+  google_fonts:
   freezed_annotation:
   percent_indicator:
   go_router:
@@ -32,3 +33,4 @@ flutter:
   assets:
     - assets/images/
     - assets/stub/
+    - assets/google_fonts/
